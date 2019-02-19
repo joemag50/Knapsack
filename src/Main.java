@@ -19,7 +19,10 @@ public class Main
 		message += "(3) By Ratio\n";
 		select = m.ReadInt(message);
 		
-		Heuristic h = new Heuristic(filename);
+		System.out.println("Print vector?:");
+		String print_vector = m.sc.nextLine();
+		
+		HeuristicArray h = new HeuristicArray(filename);
 
 		switch (select)
 		{
@@ -36,7 +39,7 @@ public class Main
 				System.out.println("No option selected.");
 				break;
 		}
-		h.ResultsToFile();
+		h.ResultsToFile(print_vector);
 	}
 	
 	public int ReadInt(String question)

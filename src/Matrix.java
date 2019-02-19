@@ -16,11 +16,74 @@ public class Matrix
 		Weights = weights;
 		Ratios = ratios;
 	}
+
+	// Quick sort algorithm
+	public void quicksortDouble(ArrayList<Double> numbers, Integer low, Integer high)
+	{
+		if (low < high)
+		{
+			Integer dp = partitionDouble(numbers, low, high);
+			quicksortDouble(numbers, low, dp-1);
+			quicksortDouble(numbers, dp+1, high);
+		}
+	}
+	
+	// partition numbers[low] to numbers[high] using numbers[low] as the pivot
+	private int partitionDouble(ArrayList<Double> numbers, Integer low, Integer high)
+	{
+		double pivot = numbers.get(low);
+		Integer i = low;
+		for (Integer j = low + 1; j <= high; j++)
+		{
+			if (numbers.get(j) < pivot) {
+				++i;
+				swap(i, j);
+			}
+		}
+		swap(low, i);
+		return i; 
+	}
+	
+	// Quick sort algorithm
+	public void quicksort(ArrayList<Integer> numbers, Integer low, Integer high)
+	{
+		if (low < high)
+		{
+			Integer dp = partition(numbers, low, high);
+			quicksort(numbers, low, dp-1);
+			quicksort(numbers, dp+1, high);
+		}
+	}
+	
+	// partition numbers[low] to numbers[high] using numbers[low] as the pivot
+	private Integer partition(ArrayList<Integer> numbers, Integer low, Integer high)
+	{
+		Integer pivot = numbers.get(low);
+		Integer i = low;
+		for (Integer j = low + 1; j <= high; j++)
+		{
+			if (numbers.get(j) < pivot) {
+				++i;
+				swap(i, j);
+			}
+		}
+		swap(low, i);
+		return i; 
+	}
+ 
+	// Exchange list[i] and list[j] values
+	private void swap(Integer i, Integer j)
+	{
+		Collections.swap(Indexes, i, j);
+		Collections.swap(Values, i, j);
+		Collections.swap(Weights, i, j);
+		Collections.swap(Ratios, i, j);
+	}
 	
 	public void SortByIndexes ()
 	{
 		int inOrder = 1;
-		
+		System.out.println("sorting...");
 		while(inOrder != 0)
 		{
 			inOrder = 0;
@@ -44,12 +107,14 @@ public class Matrix
 				}
 			}
 		}
+		System.out.println("Sort finish.");
 	}
 	
 	public void SortByValues ()
 	{
 		int inOrder = 1;
-		
+		System.out.println("sorting...");
+		/*
 		while(inOrder != 0)
 		{
 			inOrder = 0;
@@ -72,65 +137,25 @@ public class Matrix
 					inOrder++; 
 				}
 			}
-		}
+		}*/
+		this.quicksort(Values, 0, Values.size()-1);
+		System.out.println("Sort finish.");
 	}
 	
 	public void SortByWeights ()
 	{
 		int inOrder = 1;
-		
-		while(inOrder != 0)
-		{
-			inOrder = 0;
-			
-			for(int i = 0; i < Weights.size() - 1; i++)
-			{
-				if (Weights.get(i) > Weights.get(i+1))
-				{
-					Collections.swap(Indexes, i, i+1);
-					Collections.swap(Values, i, i+1);
-					Collections.swap(Weights, i, i+1);
-					Collections.swap(Ratios, i, i+1);
-				}
-			}
-			
-			for(int i = 0; i < Weights.size() - 1; i++)
-			{
-				if (Weights.get(i) > Weights.get(i+1))
-				{
-					inOrder++; 
-				}
-			}
-		}
+		System.out.println("sorting...");
+		this.quicksort(Weights, 0, Weights.size()-1);
+		System.out.println("Sort finish.");
 	}
 	
 	public void SortByRatios ()
 	{
 		int inOrder = 1;
-		
-		while(inOrder != 0)
-		{
-			inOrder = 0;
-			
-			for(int i = 0; i < Ratios.size() - 1; i++)
-			{
-				if (Ratios.get(i) < Ratios.get(i+1))
-				{
-					Collections.swap(Indexes, i, i+1);
-					Collections.swap(Values, i, i+1);
-					Collections.swap(Weights, i, i+1);
-					Collections.swap(Ratios, i, i+1);
-				}
-			}
-			
-			for(int i = 0; i < Ratios.size() - 1; i++)
-			{
-				if (Ratios.get(i) < Ratios.get(i+1))
-				{
-					inOrder++; 
-				}
-			}
-		}
+		System.out.println("sorting...");
+		this.quicksortDouble(Ratios, 0, Ratios.size()-1);
+		System.out.println("Sort finish.");
 	}
 	
 	public void DebugAll()

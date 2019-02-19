@@ -7,17 +7,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Heuristic
+public class HeuristicArray
 {
 	public String NameFile;
 	public int N, W;
-	public ArrayList<Integer> Indexes, Values, Weights;
-	public ArrayList<Double> Ratios;
-	public ArrayList<Integer> Knapsack;
+	public Double[] Indexes, Values, Weights;
+	public Double[] Ratios;
+	public Double[] Knapsack;
 	
-	public Matrix matrix;
+	public MatrixArray matrix;
 	
-	Heuristic (String name_file)
+	HeuristicArray (String name_file)
 	{
 		this.NameFile = name_file;
 		this.ReadFile();
@@ -27,10 +27,6 @@ public class Heuristic
 	{
 		// This will reference one line at a time
 		String line = null;
-		Indexes = new ArrayList<Integer>();
-		Values  = new ArrayList<Integer>();
-		Weights = new ArrayList<Integer>();
-		Ratios  = new ArrayList<Double>();
 		
 		try
 		{
@@ -38,23 +34,28 @@ public class Heuristic
 			FileReader fileReader = new FileReader(this.NameFile);
 			// Always wrap FileReader in BufferedReader.
 			BufferedReader bufferedReader = new BufferedReader(fileReader);
-			int i = 0, j = 0;
+			int i = 0;
 			while((line = bufferedReader.readLine()) != null)
 			{
 				if (i == 0)
 				{
 					N = new Integer(line.split(" ")[0]);
 					W = new Integer(line.split(" ")[1]);
+					
+					Indexes = new Double[N];
+					Values  = new Double[N];
+					Weights = new Double[N];
+					Ratios  = new Double[N];
 				}
 				else
 				{
-					int v = new Integer(line.split(" ")[1]);
-					int w = new Integer(line.split(" ")[2]);
-					Values.add(v);
-					Weights.add(w);
-					Ratios.add((double) v/ (double) w);
-					Indexes.add(j);
-					j++;
+					int index = new Integer(line.split(" ")[0]);
+					double v = new Double(line.split(" ")[1]);
+					double w = new Double(line.split(" ")[2]);
+					Values[index] = v;
+					Weights[index] = w;
+					Ratios[index] = ((double) v/ (double) w);
+					Indexes[index] = (double) index;
 				}
 				//System.out.println(line);
 				i++;
@@ -62,7 +63,7 @@ public class Heuristic
 			// Always close files.
 			bufferedReader.close();
 			
-			matrix = new Matrix(Indexes, Values, Weights, Ratios);
+			matrix = new MatrixArray(Indexes, Values, Weights, Ratios);
 		}
 		catch(FileNotFoundException ex)
 		{
@@ -75,23 +76,28 @@ public class Heuristic
 	
 	public void Resluts ()
 	{
-		/*
 		System.out.println("Results");
 		
 		int value = 0, weight = 0;
 		System.out.println("Items: ");
-		for (Integer i : Knapsack)
+		for (int i = 0; i < Knapsack.length; i++)
 		{
-			value += matrix.Values.get(i);
-			weight += matrix.Weights.get(i);
-			System.out.println("i: " + i + "; v: " + matrix.Values.get(i) + "; w: " + matrix.Weights.get(i));
+			if (Knapsack[i] == null)
+			{
+				continue;
+			}
+			else
+			{
+				value += matrix.Values[i];
+				weight += matrix.Weights[i];
+				System.out.println(String.format("i: %s; v: %s; w: %s", Knapsack[i], matrix.Values[i], matrix.Weights[i]) );
+			}
 		}
 		System.out.println("");
 		
 		System.out.println("Knapsack total value: " + value);
 		System.out.println("Knapsack limit weight: " + this.W);
 		System.out.println("Knapsack total weight: " + weight);
-		*/
 	}
 	
 	public void ResultsToFile (String print_vector)
@@ -108,23 +114,29 @@ public class Heuristic
 			FileWriter writer = new FileWriter(file);
 			writer.write("Results\n");
 			int value = 0, weight = 0;
-			if (print_vector == "true")
+			if (print_vector.equals("true"))
 			{
 				writer.write("Items:\n");
-				for (Integer i : Knapsack)
+				for (int i = 0; i < Knapsack.length; i++)
 				{
-					value += matrix.Values.get(i);
-					weight += matrix.Weights.get(i);
-					writer.write("i: " + i + "; v: " + matrix.Values.get(i) + "; w: " + matrix.Weights.get(i) + "\n");
+					if (Knapsack[i] == null)
+					{
+						continue;
+					}
+					value += matrix.Values[i];
+					weight += matrix.Weights[i];
+					writer.write(String.format("i: %s; v: %s; w: %s\n", Knapsack[i], matrix.Values[i], matrix.Weights[i]) );
 				}
 			} else
 			{
-				//writer.write("Items:\n");
-				for (Integer i : Knapsack)
+				for (int i = 0; i < Knapsack.length; i++)
 				{
-					value += matrix.Values.get(i);
-					weight += matrix.Weights.get(i);
-					//writer.write("i: " + i + "; v: " + matrix.Values.get(i) + "; w: " + matrix.Weights.get(i) + "\n");
+					if (Knapsack[i] == null)
+					{
+						continue;
+					}
+					value += matrix.Values[i];
+					weight += matrix.Weights[i];
 				}
 			}
 
@@ -144,77 +156,42 @@ public class Heuristic
 		} 
 	}
 	
-	public void Heuristic1 ()
+	public void Compare ()
 	{
-		matrix.SortByValues();
-		//matrix.DebugAll();
-		
-		Knapsack = new ArrayList<Integer>();
+		Knapsack = new Double[N];
 		int KnapsackEmptySpace = W;
-		
-		for (Integer i : matrix.Indexes)
+		for (int i = 0; i < matrix.Indexes.length; i++)
 		{
-			if (matrix.Weights.get(i) <= KnapsackEmptySpace)
+			if (matrix.Weights[i] <= KnapsackEmptySpace)
 			{
-				Knapsack.add(i);
-				KnapsackEmptySpace -= matrix.Weights.get(i);
-			}
-			
-			if (KnapsackEmptySpace <= 0)
-			{
-				break;
+				
+				Knapsack[i] = matrix.Indexes[i];
+				KnapsackEmptySpace -= matrix.Weights[i];
 			}
 		}
-		
-		this.Resluts();
+	}
+	
+	public void Heuristic1 ()
+	{
+		System.out.println("sorting...");
+		java.util.Arrays.sort(matrix.Values, Collections.reverseOrder());
+		System.out.println("finish sorting");
+		this.Compare();
 	}
 	
 	public void Heuristic2 ()
 	{
-		matrix.SortByWeights();
-		//matrix.DebugAll();
-		
-		Knapsack = new ArrayList<Integer>();
-		int KnapsackEmptySpace = W;
-		
-		for (Integer i : matrix.Indexes)
-		{
-			if (matrix.Weights.get(i) <= KnapsackEmptySpace)
-			{
-				Knapsack.add(i);
-				KnapsackEmptySpace -= matrix.Weights.get(i);
-			}
-			if (KnapsackEmptySpace <= 0)
-			{
-				break;
-			}
-		}
-		
-		this.Resluts();
+		System.out.println("sorting...");
+		java.util.Arrays.sort(matrix.Weights);
+		System.out.println("finish sorting");
+		this.Compare();
 	}
 	
 	public void Heuristic3 ()
 	{
-		matrix.SortByRatios();
-		//matrix.DebugAll();
-		
-		Knapsack = new ArrayList<Integer>();
-		int KnapsackEmptySpace = W;
-		
-		for (Integer i : matrix.Indexes)
-		{
-			if (matrix.Weights.get(i) <= KnapsackEmptySpace)
-			{
-				Knapsack.add(i);
-				KnapsackEmptySpace -= matrix.Weights.get(i);
-			}
-			
-			if (KnapsackEmptySpace <= 0)
-			{
-				break;
-			}
-		}
-		
-		this.Resluts();
+		System.out.println("sorting...");
+		java.util.Arrays.sort(matrix.Ratios, Collections.reverseOrder());
+		System.out.println("finish sorting");
+		this.Compare();
 	}
 }
