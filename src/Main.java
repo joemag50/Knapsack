@@ -9,20 +9,18 @@ public class Main
 		//JCGE
 		Main m = new Main();
 		int select = 0;
+		boolean selected = true;
 		
 		System.out.println("file name:");
 		String filename = m.sc.nextLine();
 		
+		HeuristicArray h = new HeuristicArray(filename);
+
 		String message = "Type of heuristic:\n";
 		message += "(1) By value\n";
 		message += "(2) By weight\n";
 		message += "(3) By Ratio\n";
 		select = m.ReadInt(message);
-		
-		System.out.println("Print vector?:");
-		String print_vector = m.sc.nextLine();
-		
-		HeuristicArray h = new HeuristicArray(filename);
 
 		switch (select)
 		{
@@ -36,9 +34,19 @@ public class Main
 				h.Heuristic3();
 				break;
 			default:
+				selected = false;
 				System.out.println("No option selected.");
 				break;
 		}
+
+		if (!selected)
+		{
+			return;
+		}
+		
+		System.out.println("Print vector on file?");
+		String print_vector = m.sc.nextLine();
+		
 		h.ResultsToFile(print_vector);
 	}
 	

@@ -127,7 +127,8 @@ public class HeuristicArray
 					weight += matrix.Weights[i];
 					writer.write(String.format("i: %s; v: %s; w: %s\n", Knapsack[i], matrix.Values[i], matrix.Weights[i]) );
 				}
-			} else
+			}
+			else
 			{
 				for (int i = 0; i < Knapsack.length; i++)
 				{
@@ -164,7 +165,6 @@ public class HeuristicArray
 		{
 			if (matrix.Weights[i] <= KnapsackEmptySpace)
 			{
-				
 				Knapsack[i] = matrix.Indexes[i];
 				KnapsackEmptySpace -= matrix.Weights[i];
 			}
