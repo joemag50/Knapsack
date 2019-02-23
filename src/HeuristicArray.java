@@ -5,7 +5,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 
 public class HeuristicArray
 {
@@ -63,7 +65,7 @@ public class HeuristicArray
 			// Always close files.
 			bufferedReader.close();
 			
-			matrix = new MatrixArray(Indexes, Values, Weights, Ratios);
+			matrix = new MatrixArray(N, Indexes, Values, Weights, Ratios);
 		}
 		catch(FileNotFoundException ex)
 		{
@@ -88,9 +90,9 @@ public class HeuristicArray
 			}
 			else
 			{
-				value += matrix.Values[i];
-				weight += matrix.Weights[i];
-				System.out.println(String.format("i: %s; v: %s; w: %s", Knapsack[i], matrix.Values[i], matrix.Weights[i]) );
+				value += matrix.matrix[i][1];
+				weight += matrix.matrix[i][2];
+				System.out.println(String.format("i: %s; v: %s; w: %s", Knapsack[i], matrix.matrix[i][1], matrix.matrix[i][2]) );
 			}
 		}
 		System.out.println("");
@@ -123,9 +125,9 @@ public class HeuristicArray
 					{
 						continue;
 					}
-					value += matrix.Values[i];
-					weight += matrix.Weights[i];
-					writer.write(String.format("i: %s; v: %s; w: %s\n", Knapsack[i], matrix.Values[i], matrix.Weights[i]) );
+					value += matrix.matrix[i][1];
+					weight += matrix.matrix[i][2];
+					writer.write(String.format("i: %s; v: %s; w: %s\n", Knapsack[i], matrix.matrix[i][1], matrix.matrix[i][2]) );
 				}
 			}
 			else
@@ -136,8 +138,8 @@ public class HeuristicArray
 					{
 						continue;
 					}
-					value += matrix.Values[i];
-					weight += matrix.Weights[i];
+					value += matrix.matrix[i][1];
+					weight += matrix.matrix[i][2];
 				}
 			}
 
@@ -161,20 +163,33 @@ public class HeuristicArray
 	{
 		Knapsack = new Double[N];
 		int KnapsackEmptySpace = W;
-		for (int i = 0; i < matrix.Indexes.length; i++)
+		for (int i = 0; i < matrix.N; i++)
 		{
-			if (matrix.Weights[i] <= KnapsackEmptySpace)
+			if (matrix.matrix[i][2] <= KnapsackEmptySpace)
 			{
-				Knapsack[i] = matrix.Indexes[i];
-				KnapsackEmptySpace -= matrix.Weights[i];
+				Knapsack[i] = matrix.matrix[i][0];
+				KnapsackEmptySpace -= matrix.matrix[i][2];
+			}
+			
+			if (KnapsackEmptySpace <= 0)
+			{
+				break;
 			}
 		}
+		//matrix.DebugAll();
 	}
 	
 	public void Heuristic1 ()
 	{
 		System.out.println("sorting...");
-		java.util.Arrays.sort(matrix.Values, Collections.reverseOrder());
+		
+		final Comparator<Double[]> arrayComparatorValues = new Comparator<Double[]>() {
+			@Override
+			public int compare(Double[] o1, Double[] o2) {
+				return o2[1].compareTo(o1[1]);
+			}
+		};
+		java.util.Arrays.sort(matrix.matrix, arrayComparatorValues);
 		System.out.println("finish sorting");
 		this.Compare();
 	}
@@ -182,7 +197,14 @@ public class HeuristicArray
 	public void Heuristic2 ()
 	{
 		System.out.println("sorting...");
-		java.util.Arrays.sort(matrix.Weights);
+		
+		final Comparator<Double[]> arrayComparatorWeights = new Comparator<Double[]>() {
+			@Override
+			public int compare(Double[] o1, Double[] o2) {
+				return o1[2].compareTo(o2[2]);
+			}
+		};
+		java.util.Arrays.sort(matrix.matrix, arrayComparatorWeights);
 		System.out.println("finish sorting");
 		this.Compare();
 	}
@@ -190,7 +212,14 @@ public class HeuristicArray
 	public void Heuristic3 ()
 	{
 		System.out.println("sorting...");
-		java.util.Arrays.sort(matrix.Ratios, Collections.reverseOrder());
+		
+		final Comparator<Double[]> arrayComparatorRatios = new Comparator<Double[]>() {
+			@Override
+			public int compare(Double[] o1, Double[] o2) {
+				return o2[3].compareTo(o1[3]);
+			}
+		};
+		java.util.Arrays.sort(matrix.matrix, arrayComparatorRatios);
 		System.out.println("finish sorting");
 		this.Compare();
 	}

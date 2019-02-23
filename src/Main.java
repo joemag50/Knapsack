@@ -46,7 +46,7 @@ public class Main
 		
 		System.out.println("Print vector on file?");
 		String print_vector = m.sc.nextLine();
-		
+		//h.matrix.DebugAll();
 		h.ResultsToFile(print_vector);
 	}
 	
